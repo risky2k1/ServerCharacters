@@ -104,7 +104,7 @@ public static class Utils
 				{
 					player.statistics.Stats[kv.Key.ToString()] = kv.Value;
 				}
-				Vector3 position = loggedIn ? ZNet.instance.GetPeerByHostName(playerInfo.m_userInfo.m_id.ToString()).m_refPos : profile.GetLogoutPoint();
+				Vector3 position = loggedIn ? ZNet.instance.GetPeerByHostName(playerInfo.m_userInfo.m_id.ToString())?.m_refPos ?? profile.GetLogoutPoint() : profile.GetLogoutPoint();
 				player.position = new WebinterfacePlayer.Position
 				{
 					X = position.x,
