@@ -1,0 +1,69 @@
+---
+description: Thunderstore zip layout, manifest.json, README/CHANGELOG, UTF-8, version bumps
+globs:
+  - manifest.json
+  - README.md
+  - CHANGELOG.md
+  - icon.png
+alwaysApply: false
+---
+
+# Thunderstore package (Valheim / BepInEx)
+
+## Release zip (root of the archive)
+
+The uploaded `.zip` must have these at the **root** (not inside a nested folder unless your tooling expects otherwise):
+
+| File | Requirement |
+|------|----------------|
+| `icon.png` | PNG, **256×256** |
+| `README.md` | Markdown; Thunderstore renderer ≈ GitHub but not identical — preview on Thunderstore when unsure |
+| `manifest.json` | Valid JSON, UTF-8 |
+| `CHANGELOG.md` | Optional but supported; same markdown rules as README |
+
+**Encoding:** `README.md`, `CHANGELOG.md`, and `manifest.json` must be **UTF-8**.
+
+## manifest.json
+
+Standard JSON object (UTF-8). Do not change `name` when publishing an update (new name = new package).
+
+| Key | Notes |
+|-----|--------|
+| `name` | No spaces. Allowed: `a-z` `A-Z` `0-9` `_` |
+| `description` | Short blurb for mod list; **max 250 characters** |
+| `version_number` | Semantic version `Major.Minor.Patch` — **bump for every upload** (versions are immutable) |
+| `dependencies` | Array of required Thunderstore package strings |
+| `website_url` | e.g. GitHub repo; may be `""` |
+
+Example:
+
+```json
+{
+  "name": "ExamplePackage",
+  "version_number": "1.0.1",
+  "website_url": "",
+  "description": "Short description under 250 chars.",
+  "dependencies": []
+}
+```
+
+## Updating an existing package
+
+1. Unzip the previous package or rebuild from source.
+2. Change code/assets and/or `README.md` / `CHANGELOG.md` as needed.
+3. Set `manifest.json` → `version_number` to a **higher** semver only; **keep `name` unchanged**.
+4. Re-zip with required root files and upload under the **same Thunderstore team** (otherwise it becomes a new package).
+
+## CHANGELOG.md
+
+Use the same markdown as README. Prefer newest-first sections:
+
+```markdown
+## v1.0.1
+- Fixed …
+
+## v1.0.0
+- Initial release
+```
+
+Optional: wrap old pre-releases in `<details><summary>…</summary>…</details>` per Thunderstore docs.
