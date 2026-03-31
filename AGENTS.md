@@ -1,37 +1,63 @@
 <!-- Cursor Rule start -->
+
 # You are working on a Valheim mod using BepInEx and Harmony.
 
 ## Project goal:
+
 - Modify ServerCharacters mod
 - Add no-cheat system
 - Disable all console/admin commands (spawn, god, debugmode, devcommands)
 
 # Tech stack:
+
 - C#
 - Harmony patching
 - Unity (Valheim)
 
 # Target environment:
+
 - Valheim and BepInEx: track latest stable Valheim; use the BepInEx build recommended for that game version. Re-verify Harmony targets after game updates.
 - Dedicated server: in scope — security-sensitive rules must hold on dedicated (server authority), not only on a client-hosted game.
 
 # Rules:
+
 - Always use HarmonyPatch for modifying game behavior
 - Do NOT change core game logic unless necessary
 - Prefer Prefix patches to block behavior
 - Keep code simple and readable
 
 # Context:
+
 - PlayerProfile is used for character data
 - Terminal.InputText handles console commands
 - We want to block cheat commands completely
 
 # Output:
+
 - Provide clean, minimal C# code
 - Avoid over-engineering
+
+## Storage Rule
+
+- Use file-based storage only
+- Do NOT introduce database solutions
+- Always prefer simple file operations
+
+## File Safety Rule
+
+- Always use atomic write (temp file + replace)
+- Always create backup before overwrite
+- Prevent concurrent writes using locks
+- Handle corrupted file by fallback to backup
+
+## Constraint
+
+- Do not redesign the system
+- Only improve safety and reliability
 <!-- Cursor Rule end -->
 
 <!-- gitnexus:start -->
+
 # GitNexus — Code Intelligence
 
 This project is indexed by GitNexus as **ServerCharacters** (246 symbols, 671 relationships, 21 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
@@ -68,35 +94,36 @@ This project is indexed by GitNexus as **ServerCharacters** (246 symbols, 671 re
 
 ## Tools Quick Reference
 
-| Tool | When to use | Command |
-|------|-------------|---------|
-| `query` | Find code by concept | `gitnexus_query({query: "auth validation"})` |
-| `context` | 360-degree view of one symbol | `gitnexus_context({name: "validateUser"})` |
-| `impact` | Blast radius before editing | `gitnexus_impact({target: "X", direction: "upstream"})` |
-| `detect_changes` | Pre-commit scope check | `gitnexus_detect_changes({scope: "staged"})` |
-| `rename` | Safe multi-file rename | `gitnexus_rename({symbol_name: "old", new_name: "new", dry_run: true})` |
-| `cypher` | Custom graph queries | `gitnexus_cypher({query: "MATCH ..."})` |
+| Tool             | When to use                   | Command                                                                 |
+| ---------------- | ----------------------------- | ----------------------------------------------------------------------- |
+| `query`          | Find code by concept          | `gitnexus_query({query: "auth validation"})`                            |
+| `context`        | 360-degree view of one symbol | `gitnexus_context({name: "validateUser"})`                              |
+| `impact`         | Blast radius before editing   | `gitnexus_impact({target: "X", direction: "upstream"})`                 |
+| `detect_changes` | Pre-commit scope check        | `gitnexus_detect_changes({scope: "staged"})`                            |
+| `rename`         | Safe multi-file rename        | `gitnexus_rename({symbol_name: "old", new_name: "new", dry_run: true})` |
+| `cypher`         | Custom graph queries          | `gitnexus_cypher({query: "MATCH ..."})`                                 |
 
 ## Impact Risk Levels
 
-| Depth | Meaning | Action |
-|-------|---------|--------|
-| d=1 | WILL BREAK — direct callers/importers | MUST update these |
-| d=2 | LIKELY AFFECTED — indirect deps | Should test |
-| d=3 | MAY NEED TESTING — transitive | Test if critical path |
+| Depth | Meaning                               | Action                |
+| ----- | ------------------------------------- | --------------------- |
+| d=1   | WILL BREAK — direct callers/importers | MUST update these     |
+| d=2   | LIKELY AFFECTED — indirect deps       | Should test           |
+| d=3   | MAY NEED TESTING — transitive         | Test if critical path |
 
 ## Resources
 
-| Resource | Use for |
-|----------|---------|
-| `gitnexus://repo/ServerCharacters/context` | Codebase overview, check index freshness |
-| `gitnexus://repo/ServerCharacters/clusters` | All functional areas |
-| `gitnexus://repo/ServerCharacters/processes` | All execution flows |
-| `gitnexus://repo/ServerCharacters/process/{name}` | Step-by-step execution trace |
+| Resource                                          | Use for                                  |
+| ------------------------------------------------- | ---------------------------------------- |
+| `gitnexus://repo/ServerCharacters/context`        | Codebase overview, check index freshness |
+| `gitnexus://repo/ServerCharacters/clusters`       | All functional areas                     |
+| `gitnexus://repo/ServerCharacters/processes`      | All execution flows                      |
+| `gitnexus://repo/ServerCharacters/process/{name}` | Step-by-step execution trace             |
 
 ## Self-Check Before Finishing
 
 Before completing any code modification task, verify:
+
 1. `gitnexus_impact` was run for all modified symbols
 2. No HIGH/CRITICAL risk warnings were ignored
 3. `gitnexus_detect_changes()` confirms changes match expected scope
@@ -122,14 +149,14 @@ To check whether embeddings exist, inspect `.gitnexus/meta.json` — the `stats.
 
 ## CLI
 
-| Task | Read this skill file |
-|------|---------------------|
-| Understand architecture / "How does X work?" | `.claude/skills/gitnexus/gitnexus-exploring/SKILL.md` |
-| Blast radius / "What breaks if I change X?" | `.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md` |
-| Trace bugs / "Why is X failing?" | `.claude/skills/gitnexus/gitnexus-debugging/SKILL.md` |
-| Rename / extract / split / refactor | `.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md` |
-| Tools, resources, schema reference | `.claude/skills/gitnexus/gitnexus-guide/SKILL.md` |
-| Index, status, clean, wiki CLI commands | `.claude/skills/gitnexus/gitnexus-cli/SKILL.md` |
-| Work in the ServerCharacters area (84 symbols) | `.claude/skills/generated/servercharacters/SKILL.md` |
+| Task                                           | Read this skill file                                        |
+| ---------------------------------------------- | ----------------------------------------------------------- |
+| Understand architecture / "How does X work?"   | `.claude/skills/gitnexus/gitnexus-exploring/SKILL.md`       |
+| Blast radius / "What breaks if I change X?"    | `.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md` |
+| Trace bugs / "Why is X failing?"               | `.claude/skills/gitnexus/gitnexus-debugging/SKILL.md`       |
+| Rename / extract / split / refactor            | `.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md`     |
+| Tools, resources, schema reference             | `.claude/skills/gitnexus/gitnexus-guide/SKILL.md`           |
+| Index, status, clean, wiki CLI commands        | `.claude/skills/gitnexus/gitnexus-cli/SKILL.md`             |
+| Work in the ServerCharacters area (84 symbols) | `.claude/skills/generated/servercharacters/SKILL.md`        |
 
 <!-- gitnexus:end -->
