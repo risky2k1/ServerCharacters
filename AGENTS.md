@@ -11,6 +11,10 @@
 - Harmony patching
 - Unity (Valheim)
 
+# Target environment:
+- Valheim and BepInEx: track latest stable Valheim; use the BepInEx build recommended for that game version. Re-verify Harmony targets after game updates.
+- Dedicated server: in scope — security-sensitive rules must hold on dedicated (server authority), not only on a client-hosted game.
+
 # Rules:
 - Always use HarmonyPatch for modifying game behavior
 - Do NOT change core game logic unless necessary
