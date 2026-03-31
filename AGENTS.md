@@ -1,3 +1,32 @@
+<!-- Cursor Rule start -->
+# You are working on a Valheim mod using BepInEx and Harmony.
+
+## Project goal:
+- Modify ServerCharacters mod
+- Add no-cheat system
+- Disable all console/admin commands (spawn, god, debugmode, devcommands)
+
+# Tech stack:
+- C#
+- Harmony patching
+- Unity (Valheim)
+
+# Rules:
+- Always use HarmonyPatch for modifying game behavior
+- Do NOT change core game logic unless necessary
+- Prefer Prefix patches to block behavior
+- Keep code simple and readable
+
+# Context:
+- PlayerProfile is used for character data
+- Terminal.InputText handles console commands
+- We want to block cheat commands completely
+
+# Output:
+- Provide clean, minimal C# code
+- Avoid over-engineering
+<!-- Cursor Rule end -->
+
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
