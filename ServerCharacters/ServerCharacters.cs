@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -118,6 +118,8 @@ public class ServerCharacters : BaseUnityPlugin
 
 		Assembly assembly = Assembly.GetExecutingAssembly();
 		harmony.PatchAll(assembly);
+
+		Application.quitting += CharacterFileIo.FlushAllPendingSaves;
 
 		FileSystemWatcher maintenanceFileWatcher = new(Paths.ConfigPath, "maintenance");
 		maintenanceFileWatcher.Created += maintenanceFileEvent;

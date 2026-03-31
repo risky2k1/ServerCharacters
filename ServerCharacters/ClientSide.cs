@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -377,6 +377,7 @@ public static class ClientSide
 		[UsedImplicitly]
 		private static void Prefix()
 		{
+			CharacterFileIo.FlushAllPendingSaves();
 			forceSynchronousSaving = true;
 		}
 
