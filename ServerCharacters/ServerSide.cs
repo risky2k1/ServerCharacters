@@ -192,163 +192,43 @@ public static class ServerSide
 		return rpc is null || ZNet.instance.ListContainsId(ZNet.instance.m_adminList, rpc.GetSocket().GetHostName());
 	}
 
+	private static string? TryGetNewestProfileFilenameForId(string playerId)
+	{
+		string prefix = playerId + "_";
+		return Directory.GetFiles(Utils.CharacterSavePath)
+			.Where(path => Utils.IsServerCharactersFilePattern(Path.GetFileName(path)))
+			.Select(path => new FileInfo(path))
+			.Where(file => file.Name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+			.OrderByDescending(file => file.LastWriteTimeUtc)
+			.Select(file => Path.GetFileNameWithoutExtension(file.Name))
+			.FirstOrDefault();
+	}
+
 	public static void onGiveItem(ZRpc? peerRpc, string itemName, int itemQuantity, string targetPlayerName, string targetPlayerId)
 	{
-		if (!isAdmin(peerRpc))
-		{
-			return;
-		}
-
-		List<ZNetPeer> onlinePlayers = ZNet.m_instance.m_peers;
-		foreach (ZNetPeer player in onlinePlayers)
-		{
-			if (string.Compare(targetPlayerName, player.m_playerName, StringComparison.InvariantCultureIgnoreCase) == 0 && (targetPlayerId == "0" || Utils.GetPlayerID(player.m_socket.GetHostName()) == Utils.GetPlayerID(targetPlayerId)))
-			{
-				player.m_rpc.Invoke("ServerCharacters GiveItem", itemName, itemQuantity);
-				return;
-			}
-		}
+		Utils.Log("Ignoring GiveItem command: admin/cheat RPCs are disabled.");
 	}
 
 	private static void onGetPlayerPos(ZRpc peerRpc, string targetPlayerName, string targetPlayerId)
 	{
-		if (!isAdmin(peerRpc))
-		{
-			return;
-		}
-
-		List<ZNetPeer> onlinePlayers = ZNet.m_instance.m_peers;
-		foreach (ZNetPeer player in onlinePlayers)
-		{
-			if (string.Compare(targetPlayerName, player.m_playerName, StringComparison.InvariantCultureIgnoreCase) == 0 && (targetPlayerId == "0" || Utils.GetPlayerID(player.m_socket.GetHostName()) == Utils.GetPlayerID(targetPlayerId)))
-			{
-				peerRpc.Invoke("ServerCharacters GetPlayerPos", player.GetRefPos());
-				return;
-			}
-		}
-
+		Utils.Log("Ignoring GetPlayerPos command: admin/cheat RPCs are disabled.");
 		peerRpc.Invoke("ServerCharacters GetPlayerPos", Vector3.zero);
 	}
 
 	private static void onSendOwnPos(ZRpc peerRpc, string targetPlayerName, string targetPlayerId, Vector3 pos)
 	{
-		if (!isAdmin(peerRpc))
-		{
-			return;
-		}
-
-		List<ZNetPeer> onlinePlayers = ZNet.m_instance.m_peers;
-		foreach (ZNetPeer player in onlinePlayers)
-		{
-			if (string.Compare(targetPlayerName, player.m_playerName, StringComparison.InvariantCultureIgnoreCase) == 0 && (targetPlayerId == "0" || Utils.GetPlayerID(player.m_socket.GetHostName()) == Utils.GetPlayerID(targetPlayerId)))
-			{
-				player.m_rpc.Invoke("ServerCharacters TeleportTo", pos);
-				peerRpc.Invoke("ServerCharacters SendOwnPos", player.GetRefPos());
-				return;
-			}
-		}
-
+		Utils.Log("Ignoring SendOwnPos command: admin/cheat RPCs are disabled.");
 		peerRpc.Invoke("ServerCharacters SendOwnPos", Vector3.zero);
 	}
 
 	public static void onResetSkill(ZRpc? peerRpc, string skillName, string targetPlayerName, string targetPlayerId)
 	{
-		if (!isAdmin(peerRpc))
-		{
-			return;
-		}
-
-		List<ZNetPeer> onlinePlayers = ZNet.m_instance.m_peers;
-		foreach (ZNetPeer player in onlinePlayers)
-		{
-			if (targetPlayerName == "" || string.Compare(targetPlayerName, player.m_playerName, StringComparison.InvariantCultureIgnoreCase) == 0 && (targetPlayerId == "0" || Utils.GetPlayerID(player.m_socket.GetHostName()) == Utils.GetPlayerID(targetPlayerId)))
-			{
-				player.m_rpc.Invoke("ServerCharacters ResetSkill", skillName);
-			}
-		}
-
-		foreach (string s in Directory.GetFiles(Utils.CharacterSavePath))
-		{
-			FileInfo file = new(s);
-
-			try
-			{
-				if (Utils.IsServerCharactersFilePattern(file.Name))
-				{
-					string[] parts = file.Name.Split('_');
-					string Id = $"{parts[0]}_{parts[1]}";
-					string Name = parts[2].Split('.')[0];
-					if ((targetPlayerId == "0" || Utils.GetPlayerID(targetPlayerId) == Id) && (targetPlayerName == "" || string.Compare(targetPlayerName, Name, StringComparison.InvariantCultureIgnoreCase) == 0))
-					{
-						PlayerProfile profile = new($"{file.Name.Replace(".fch", "")}", FileHelpers.FileSource.Local);
-						profile.LoadPlayerFromDisk();
-
-						Skills skills = ReadSkillsFromProfile(profile);
-
-						skills.CheatResetSkill(skillName);
-
-						ZPackage pkg = new();
-						skills.Save(pkg);
-						PatchPlayerProfileSkills(profile, pkg.GetArray());
-						profile.SavePlayerToDisk();
-					}
-				}
-			}
-			catch (Exception e)
-			{
-				Utils.Log($"Removing skill failed for profile {file.Name.Replace(".fch", "")}: {e}");
-			}
-		}
+		Utils.Log("Ignoring ResetSkill command: admin/cheat RPCs are disabled.");
 	}
 
 	public static void onRaiseSkill(ZRpc? peerRpc, string skill, int level, string targetPlayerName, string targetPlayerId)
 	{
-		if (!isAdmin(peerRpc))
-		{
-			return;
-		}
-
-		List<ZNetPeer> onlinePlayers = ZNet.m_instance.m_peers;
-		foreach (ZNetPeer player in onlinePlayers)
-		{
-			if (targetPlayerName == "" || string.Compare(targetPlayerName, player.m_playerName, StringComparison.InvariantCultureIgnoreCase) == 0 && (targetPlayerId == "0" || Utils.GetPlayerID(player.m_socket.GetHostName()) == Utils.GetPlayerID(targetPlayerId)))
-			{
-				player.m_rpc.Invoke("ServerCharacters RaiseSkill", skill, level);
-			}
-		}
-
-		foreach (string s in Directory.GetFiles(Utils.CharacterSavePath))
-		{
-			FileInfo file = new(s);
-
-			try
-			{
-				if (Utils.IsServerCharactersFilePattern(file.Name))
-				{
-					string[] parts = file.Name.Split('_');
-					string Id = $"{parts[0]}_{parts[1]}";
-					string Name = parts[2].Split('.')[0];
-					if ((targetPlayerId == "0" || Utils.GetPlayerID(targetPlayerId) == Id) && (targetPlayerName == "" || string.Compare(targetPlayerName, Name, StringComparison.InvariantCultureIgnoreCase) == 0))
-					{
-						PlayerProfile profile = new($"{file.Name.Replace(".fch", "")}", FileHelpers.FileSource.Local);
-						profile.LoadPlayerFromDisk();
-
-						Skills skills = ReadSkillsFromProfile(profile);
-
-						skills.CheatRaiseSkill(skill, level);
-
-						ZPackage pkg = new();
-						skills.Save(pkg);
-						PatchPlayerProfileSkills(profile, pkg.GetArray());
-						profile.SavePlayerToDisk();
-					}
-				}
-			}
-			catch (Exception e)
-			{
-				Utils.Log($"Raise skill failed for profile {file.Name.Replace(".fch", "")}: {e}");
-			}
-		}
+		Utils.Log("Ignoring RaiseSkill command: admin/cheat RPCs are disabled.");
 	}
 
 	[HarmonyPatch(typeof(ZNet), nameof(ZNet.Disconnect))]
@@ -466,15 +346,34 @@ public static class ServerSide
 			{
 				if (peer.m_uid != 0)
 				{
-					PlayerProfile playerProfile = new(Utils.GetPlayerID(peer.m_socket.GetHostName()) + "_" + peer.m_playerName.ToLower(), FileHelpers.FileSource.Local);
+					string playerId = Utils.GetPlayerID(peer.m_socket.GetHostName());
+					string selectedProfileFilename = playerId + "_" + peer.m_playerName.ToLower();
+					string activeProfileFilename = selectedProfileFilename;
+					PlayerProfile playerProfile = new(activeProfileFilename, FileHelpers.FileSource.Local);
 					byte[] playerProfileData = playerProfile.LoadPlayerDataFromDisk()?.GetArray() ?? Array.Empty<byte>();
 
-					if (playerProfileData.Length == 0 && ServerCharacters.singleCharacterMode.GetToggle() && !__instance.ListContainsId(__instance.m_adminList, peer.m_rpc.GetSocket().GetHostName()) && Utils.GetPlayerListFromFiles().playerLists.Any(p => p.Id == Utils.GetPlayerID(peer.m_rpc.GetSocket().GetHostName())))
+					if (ServerCharacters.singleCharacterMode.GetToggle())
 					{
-						peer.m_rpc.Invoke("Error", ServerCharacters.SingleCharacterModeDisconnectMagic);
-						Utils.Log($"Non-admin client {Utils.GetPlayerID(peer.m_rpc.GetSocket().GetHostName())} tried to create a second character and got disconnected");
-						__instance.Disconnect(peer);
-						yield break;
+						if (TryGetNewestProfileFilenameForId(playerId) is { } newestProfileFilename)
+						{
+							activeProfileFilename = newestProfileFilename;
+							if (!string.Equals(selectedProfileFilename, activeProfileFilename, StringComparison.OrdinalIgnoreCase))
+							{
+								playerProfile = new(activeProfileFilename, FileHelpers.FileSource.Local);
+								playerProfileData = playerProfile.LoadPlayerDataFromDisk()?.GetArray() ?? Array.Empty<byte>();
+								Utils.Log($"Client {playerId} selected a different character; forcing newest profile '{activeProfileFilename}'.");
+							}
+						}
+					}
+
+					string[] activeParts = activeProfileFilename.Split('_');
+					if (activeParts.Length >= 3)
+					{
+						peerProfileNameMap[peer] = new Utils.ProfileName
+						{
+							id = $"{activeParts[0]}_{activeParts[1]}",
+							name = string.Join("_", activeParts.Skip(2)).ToLower().Replace(".fch", ""),
+						};
 					}
 
 					if (!ServerCharacters.backupOnlyMode.GetToggle())

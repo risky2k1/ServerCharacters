@@ -1,7 +1,7 @@
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **ServerCharacters** (246 symbols, 671 relationships, 21 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **ServerCharacters** (279 symbols, 761 relationships, 24 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 
@@ -97,6 +97,20 @@ To check whether embeddings exist, inspect `.gitnexus/meta.json` — the `stats.
 | Rename / extract / split / refactor | `.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md` |
 | Tools, resources, schema reference | `.claude/skills/gitnexus/gitnexus-guide/SKILL.md` |
 | Index, status, clean, wiki CLI commands | `.claude/skills/gitnexus/gitnexus-cli/SKILL.md` |
-| Work in the ServerCharacters area (84 symbols) | `.claude/skills/generated/servercharacters/SKILL.md` |
 
 <!-- gitnexus:end -->
+
+## Project Snapshot (Quick Context)
+
+- Mod type: Valheim `BepInEx` + `Harmony` plugin (`org.bepinex.plugins.servercharacters`)
+- Runtime focus: server-authoritative character sync with dedicated-server security in mind
+- Primary files:
+  - `ServerCharacters/ServerCharacters.cs` (bootstrap/config/init)
+  - `ServerCharacters/ServerSide.cs` (server authority/RPC/admin checks)
+  - `ServerCharacters/ClientSide.cs` (client sync + backup/signature flow)
+  - `ServerCharacters/Shared.cs` (transport/compression/compat checks)
+  - `ServerCharacters/CharacterFileIo.cs` (atomic write + .bak fallback + lock/debounce)
+- Current engineering constraints:
+  - Keep using Harmony patches (prefer Prefix for blocking logic)
+  - File-based persistence only
+  - Improve reliability/security incrementally, avoid redesign

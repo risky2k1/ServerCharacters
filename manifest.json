@@ -1,0 +1,41 @@
+{
+  "project": {
+    "name": "ServerCharacters",
+    "type": "Valheim BepInEx Mod",
+    "language": "C#",
+    "framework": ".NET Framework 4.8",
+    "plugin": {
+      "guid": "org.bepinex.plugins.servercharacters",
+      "name": "Server Characters",
+      "version": "1.4.16"
+    }
+  },
+  "goals": [
+    "Server-authoritative character data",
+    "No-cheat hardening",
+    "Disable/contain abusive console-admin behavior in dedicated environment",
+    "Improve file safety and reliability without redesign"
+  ],
+  "entrypoints": [
+    "ServerCharacters/ServerCharacters.cs",
+    "ServerCharacters/ServerSide.cs",
+    "ServerCharacters/ClientSide.cs",
+    "ServerCharacters/Shared.cs",
+    "ServerCharacters/CharacterFileIo.cs"
+  ],
+  "storage_policy": {
+    "type": "file-only",
+    "requirements": [
+      "atomic write (temp + replace)",
+      "backup before overwrite",
+      "lock for concurrent write prevention",
+      "fallback to backup on corruption"
+    ]
+  },
+  "agent_notes": {
+    "must_use_harmony_patch": true,
+    "prefer_prefix_for_blocking": true,
+    "do_not_redesign": true,
+    "keep_changes_minimal": true
+  }
+}

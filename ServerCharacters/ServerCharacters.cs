@@ -81,6 +81,19 @@ public class ServerCharacters : BaseUnityPlugin
 		public bool? Browsable = false;
 	}
 
+	private static void enforceCharacterAuthorityModes()
+	{
+		if (singleCharacterMode.Value != Toggle.On)
+		{
+			singleCharacterMode.Value = Toggle.On;
+		}
+
+		if (backupOnlyMode.Value != Toggle.Off)
+		{
+			backupOnlyMode.Value = Toggle.Off;
+		}
+	}
+
 	public void Awake()
 	{
 		selfReference = this;
@@ -93,8 +106,11 @@ public class ServerCharacters : BaseUnityPlugin
 		webhookUsernameOther = config("1 - General", "Discord Username Other", "Server Characters", new ConfigDescription("Username to be used for non-maintenance related posts to Discord.", null, new ConfigurationManagerAttributes()), false);
 
 		hardcoreMode = config("2 - Save Files", "Hardcore mode", Toggle.Off, "If set to on, players will be kicked from the server and their save file on the server will be deleted, if they die.");
-		singleCharacterMode = config("2 - Save Files", "Single Character Mode", Toggle.Off, "If set to on, each SteamID / Xbox ID can create one character only on this server. Has no effect for admins.");
+		singleCharacterMode = config("2 - Save Files", "Single Character Mode", Toggle.On, "Always enforced: each SteamID / Xbox ID can have exactly one character on this server.");
 		backupOnlyMode = config("2 - Save Files", "Backup only mode", Toggle.Off, "Enabling this will not enforce the server profile anymore. DO NOT ENABLE THIS IF YOU DON'T KNOW EXACTLY WHAT YOU ARE DOING!");
+		singleCharacterMode.SettingChanged += (_, _) => enforceCharacterAuthorityModes();
+		backupOnlyMode.SettingChanged += (_, _) => enforceCharacterAuthorityModes();
+		enforceCharacterAuthorityModes();
 		backupsToKeep = config("2 - Save Files", "Number of backups to keep", 25, new ConfigDescription("Sets the number of backups that should be stored for each character.", new AcceptableValueRange<int>(1, 50)));
 		autoSaveInterval = config("2 - Save Files", "Auto save interval", 30, new ConfigDescription("Minutes between auto saves of characters and the world.", new AcceptableValueRange<int>(1, 120)));
 		autoSaveInterval.SettingChanged += (_, _) => Game.m_saveInterval = autoSaveInterval.Value * 60;

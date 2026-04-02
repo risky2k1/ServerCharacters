@@ -59,6 +59,79 @@ public static class ClientSide
 
 	private static TaskCompletionSource<Vector3>? awaitingPos = null;
 
+	private static readonly HashSet<string> disabledTerminalCommands = new(StringComparer.OrdinalIgnoreCase)
+	{
+		"devcommands",
+		"debugmode",
+		"god",
+		"fly",
+		"ghost",
+		"spawn",
+		"itemset",
+		"raiseskill",
+		"resetskill",
+		"freefly",
+		"ffsmooth",
+		"tod",
+		"env",
+		"event",
+		"randomevent",
+		"stopevent",
+		"removedrops",
+		"resetmap",
+		"exploremap",
+		"tame",
+		"killall",
+		"nocost",
+		"servercharacters",
+	};
+
+	private static bool TryGetCommandName(string rawInput, out string command)
+	{
+		command = "";
+		if (string.IsNullOrWhiteSpace(rawInput))
+		{
+			return false;
+		}
+
+		string text = rawInput.Trim();
+		if (text.StartsWith("/", StringComparison.Ordinal))
+		{
+			text = text.Substring(1).TrimStart();
+		}
+
+		if (text.Length == 0)
+		{
+			return false;
+		}
+
+		int firstSpace = text.IndexOf(' ');
+		command = (firstSpace >= 0 ? text.Substring(0, firstSpace) : text).Trim();
+		return command.Length > 0;
+	}
+
+	[HarmonyPatch(typeof(Terminal), nameof(Terminal.InputText))]
+	private static class BlockCheatTerminalCommands
+	{
+		[UsedImplicitly]
+		private static bool Prefix(Terminal __instance)
+		{
+			if (__instance.m_input == null || !TryGetCommandName(__instance.m_input.text, out string command))
+			{
+				return true;
+			}
+
+			if (!disabledTerminalCommands.Contains(command))
+			{
+				return true;
+			}
+
+			__instance.AddString($"Command '{command}' is disabled on this server.");
+			__instance.m_input.text = "";
+			return false;
+		}
+	}
+
 	[HarmonyPatch(typeof(Terminal), nameof(Terminal.InitTerminal))]
 	public class AddChatCommands
 	{
